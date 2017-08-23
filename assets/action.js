@@ -14,39 +14,41 @@
     //creating a variable to reference the database
     var database = firebase.database();
 
-    //calculations for total months worked and total billed
-    //take the first train time and add the frequency= next arrival time
     
+    //set html to the values from the database
+    database.ref().on('value', function(snap){
+      console.log(snap.val());
+    })
 
+    //this is triggered for each item in the database on load
+    database.ref().on('child_added', function(snap){
+      newRow(snap.val().name, snap.val().destination, snap.val().freq)
 
+    });
+
+    
 
     // function to create the new row from input form
     function addRow(name, destination, firstTrain, freq) {
+      console.log(name);
 
+      var diff = moment().diff(moment(firstTrain, "HH:mm"), "minutes");
+      var minsAway = (diff%freq); //gives you time till next train
 
-      
-      // var nextArrival = (firstTrain + freq); figure out how to add these together
-      var minsAway = ("500000000"); // not sure what they want here
-
-     
-
+      var nextTrain = moment().add(minsAway, "minutes");
+    
       var newRow = $("<tr>").append( $("<td>").text(name) )
                             .append( $("<td>").text(destination) )
                             .append( $("<td>").text(freq) )
-                            // .append( $("<td>").text(nextArrival))
+                            .append( $("<td>").text(nextTrain.format("HH:mm")))
                             .append( $("<td>").text(minsAway) )
                             
       $("tbody").append(newRow);
 
-   //pushing the form data up to firebase
-        database.ref().push({
-          "TrainName": name,
-          "Destination" : destination,
-          "FirstTrain": firstTrain,
-          "Frequency": freq
-        })
+ 
 
     };
+
 
 
  // submit button to push the data up to the train schedule table
@@ -60,10 +62,18 @@ $("#submit-button").on("click", function(event){
   
   
 
-  console.log(name);
-  console.log(destination);
-  console.log(firstTrain);
-  console.log(freq);
+  // console.log(name);
+  // console.log(destination);
+  // console.log(firstTrain);
+  // console.log(freq);
+
+    //pushing the form data up to firebase
+        database.ref().push({
+          "TrainName": name,
+          "Destination" : destination,
+          "FirstTrain": firstTrain,
+          "Frequency": freq
+        })
     
 
 	addRow(name, destination, firstTrain, freq);
