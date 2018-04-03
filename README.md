@@ -1,4 +1,4 @@
-##Train-Schedule
+# Train-Schedule
 
  https://jamiewithay.github.io/Train-Schedule/
 Using moment.js and firebase
